@@ -1,0 +1,36 @@
+{
+  "PULSAR_K23800_CONV_INPUT_FIELD": {
+      "type": "uint32_t",
+      "name": "tst",
+      "rate": "[]",
+      "desc": "Тестовая переменная"
+  },
+  "PULSAR_K23800_HEADER_FIELD": [
+    {
+      "type": "uint8_t",
+      "name": "source",
+      "rate": "[1:255]",
+      "desc": "Условное имя отправителя"
+    },
+    {
+      "type": "uint8_t",
+      "name": "destination",
+      "rate": "[1:255]",
+      "desc": "Условное имя получателя"
+    },
+    {
+      "type": "uint16_t",
+      "name": "id",
+      "rate": "[1:65535]",
+      "desc": "Идентификатор типа сообщения"
+    },
+    {
+      "type": "uint32_t",
+      "name": "sequence",
+      "rate": "[1:4294967295]",
+      "desc": "Счетчик пакетов"
+    }
+  ]
+}
+
+

@@ -1,0 +1,23 @@
+ROOT; // init root obj
+  MEMBER("name", "Google");
+  OBJECT("location");
+    MEMBER("street", "1600 Amphitheatre Parkway");
+    MEMBER("city", "Mountain View");
+    MEMBER("state", "California");
+    MEMBER("country", "US");
+  END;
+  ARRAY("employees");
+    OBJECT();
+      MEMBER("name", "Michael");
+      MEMBER("division", "Engineering");
+    END;
+    OBJECT();
+      MEMBER("name", "Laura");
+      MEMBER("division", "HR");
+    END;
+    OBJECT();
+      MEMBER("name", "Elise");
+      MEMBER("division", "Marketing");
+    END;
+  END;
+END;
