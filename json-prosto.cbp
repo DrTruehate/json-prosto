@@ -31,6 +31,13 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="jsons/test.inc" />
+		<Unit filename="jsons/test.json" />
+		<Unit filename="jsons/tst.json" />
+		<Unit filename="jsons/tst1.json" />
+		<Unit filename="jsons/valid-0000.inc" />
+		<Unit filename="jsons/valid-0000.json" />
+		<Unit filename="jsons/valid-0001.inc" />
 		<Unit filename="jtrees.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />

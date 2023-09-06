@@ -1,65 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "misc.h"
-#include "jtrees.h"
+#include "jlists.h"
 
-
-int JNodeInit(jtree_node_t *node, size_t bufsz)
+int JNodeInit(jlist_node_t *const node, const size_t bufsz)
 {
-  if(sizeof(jtree_node_t) > bufsz) return 0;
+  assert(sizeof(jlist_node_t) <= bufsz);
+  if(sizeof(jlist_node_t) > bufsz) return 0;
 
   node->owner = NULL;// root obj
   node->next = NULL;
   node->type = JSON_OBJECT;
   node->datasz = 0;
 
-  return sizeof(jtree_node_t);
+  return sizeof(jlist_node_t);
 }
 
 
-int AddJNode(jtree_node_t *tail, char *data, int datasz, size_t bufsz)
+int AddJNodeData(jlist_node_t **tail, const char *data, const int datasz, const size_t bufsz)
 {
-  int nodesz = sizeof(jtree_node_t) + datasz;
+  int nodesz = sizeof(jlist_node_t) + datasz;
+  assert(nodesz <= bufsz);
   if(nodesz > bufsz) return 0;
 
-  tail->next = (void *)(tail+1) + tail->datasz;
-  printf("tail = %p\n"
-         "tail->next = %p\n", tail, tail->next);
+  (*tail)->next = (void *)(*tail+1) + (*tail)->datasz;
 
-  tail = tail->next;
-  printf("new tail = %p\n", tail);
-  tail->next = NULL;
-  tail->datasz = datasz;
-  memcpy( tail->data, data, datasz );
-  printf("new tail->data = %s\n", tail->data);
+  *tail = (*tail)->next;// Update tail
+  (*tail)->next = NULL;
+  (*tail)->datasz = datasz;
+  memcpy( (*tail)->data, data, datasz );
 
   return nodesz;
 }
 
 
-void JNodePrint(jtree_node_t *ptr)
+void JNodePrint(jlist_node_t *ptr)
 {
-  printf("owner   = %p\n" "next    = %p\n" "type    = %d\n" "datasz  = %d\n",
+  printf("nodePtr = %p\n"
+         "owner   = %p\n" "next    = %p\n" "type    = %d\n" "datasz  = %d\n",
+         ptr,
          ptr->owner, ptr->next, ptr->type, ptr->datasz);
 }
 
 
 int main(int argc, char** argv)
 {
-  char jtree[BUFSIZ], jdata[256], *jptr;
-  jtree_node_t *jtail;
-  //void *depth[10];
-  int treesz = BUFSIZ;
+  char jlist[BUFSIZ], jdata[256], *jptr;
+  jlist_node_t *jtail;
+  void *depth[10];
+  int listsz = BUFSIZ;
 
   // JTreeInit()
-  jtail = (jtree_node_t *)jtree;
-  int nodeSize = JNodeInit(jtail, treesz);
+  jtail = (jlist_node_t *)jlist;
+  int nodeSize = JNodeInit(jtail, listsz);
   if(nodeSize == 0) ERROR("No space to allocate jtree[]\n");
-  treesz -= nodeSize;
-  //depth[0] = &jtail; // root obj
-  printf("jtail = %p\n", jtail);
+  listsz -= nodeSize;
+  depth[0] = jtail; // root obj
+  //printf("depth[0] = %p\n", depth[0]);
+  printf("nodeSize = %d\n", nodeSize);
+  //JNodePrint(jtail);
 
   // AddJNode()
   int strsz = 0; jptr = &jdata[strsz];
@@ -70,12 +72,14 @@ int main(int argc, char** argv)
   if(strsz > 256) ERROR("No space to allocate jdata[]");
   //printf("strsz = %d, jptr = %s\n", strsz, jptr);
 
-  nodeSize = AddJNode(jtail, jdata, strsz, treesz);
+  nodeSize = AddJNodeData(&jtail, jdata, strsz, listsz);
   printf("nodeSize = %d\n", nodeSize);
+  //JNodePrint(jtail);
 
-  //depth[1] = &jtail;
-  //JNodePrint(depth[0]);
-  //JNodePrint(depth[1]);
+  depth[1] = jtail;
+  JNodePrint(depth[0]);
+  JNodePrint(depth[1]);
+  printf("jtail->data = %s\n", jtail->data);
 
   return EXIT_SUCCESS;
 }

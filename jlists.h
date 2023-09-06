@@ -22,4 +22,4 @@ typedef struct jtree_node {
   json_type_t type; // type of node
   int datasz;       // size of data field
   char data[0];     // beginning of data field
-} jtree_node_t;
+} jlist_node_t;
