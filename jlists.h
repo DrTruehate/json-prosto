@@ -15,7 +15,7 @@ typedef enum {
 } json_type_t;
 
 
-typedef struct jtree_node {
+typedef struct {
   void
     *owner, // owner of item (object or array)
     *next;  // next node
@@ -23,3 +23,15 @@ typedef struct jtree_node {
   int datasz;       // size of data field
   char data[0];     // beginning of data field
 } jlist_node_t;
+
+
+typedef struct {
+  int listsz;
+  jlist_node_t *tail;
+  char nodes[0];
+} jlist_t;
+
+int JNodeInit(jlist_node_t *const node, const size_t bufsz);
+int AddJNodeData(jlist_node_t **tail,
+                 const char *data, const int datasz, const size_t bufsz);
+void JNodePrint(jlist_node_t *ptr);

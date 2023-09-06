@@ -4,8 +4,7 @@
  *  Created on: 08 июня 2021 г.
  *      Author: Eugene Frantsuzov
  */
-#ifndef MISC_H_
-#define MISC_H_
+#pragma once
 
 #define PTR_SIZEOF(type, obj) (type *)&obj, sizeof(obj)
 #define BZERO(array)          bzero( array, sizeof(array) )
@@ -27,4 +26,3 @@
     return EXIT_FAILURE; \
   } while(0)
 
-#endif // MISC_H_

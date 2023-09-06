@@ -2,53 +2,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
 #include "misc.h"
 #include "jlists.h"
 
-int JNodeInit(jlist_node_t *const node, const size_t bufsz)
+int FormJNodeData(char *data, const char *key, char *value, json_type_t type, int bufsz)
 {
-  assert(sizeof(jlist_node_t) <= bufsz);
-  if(sizeof(jlist_node_t) > bufsz) return 0;
+  int keysz, valsz;
 
-  node->owner = NULL;// root obj
-  node->next = NULL;
-  node->type = JSON_OBJECT;
-  node->datasz = 0;
-
-  return sizeof(jlist_node_t);
-}
-
-
-int AddJNodeData(jlist_node_t **tail, const char *data, const int datasz, const size_t bufsz)
-{
-  int nodesz = sizeof(jlist_node_t) + datasz;
-  assert(nodesz <= bufsz);
-  if(nodesz > bufsz) return 0;
-
-  (*tail)->next = (void *)(*tail+1) + (*tail)->datasz;
-
-  *tail = (*tail)->next;// Update tail
-  (*tail)->next = NULL;
-  (*tail)->datasz = datasz;
-  memcpy( (*tail)->data, data, datasz );
-
-  return nodesz;
-}
-
-
-void JNodePrint(jlist_node_t *ptr)
-{
-  printf("nodePtr = %p\n"
-         "owner   = %p\n" "next    = %p\n" "type    = %d\n" "datasz  = %d\n",
-         ptr,
-         ptr->owner, ptr->next, ptr->type, ptr->datasz);
+  switch(type) {
+    case JSON_UNDEFINED ... JSON_NULL: break;
+    case JSON_KEYSTR:
+      keysz = snprintf(data, bufsz, "%s", key);
+      assert(keysz >= 0);
+      if(keysz < 0) return -1;
+      keysz++;
+      valsz = snprintf(&data[keysz], bufsz-keysz, "%s", value);
+      assert(valsz >= 0);
+      if(valsz < 0) return -1;
+      valsz++;
+      return keysz + valsz;
+    case JSON_KEYNUM ... JSON_KEYNULL: break;
+  }
+  return -1;
 }
 
 
 int main(int argc, char** argv)
 {
-  char jlist[BUFSIZ], jdata[256], *jptr;
+  char jlist[BUFSIZ], jdata[256];
   jlist_node_t *jtail;
   void *depth[10];
   int listsz = BUFSIZ;
@@ -60,26 +41,31 @@ int main(int argc, char** argv)
   listsz -= nodeSize;
   depth[0] = jtail; // root obj
   //printf("depth[0] = %p\n", depth[0]);
-  printf("nodeSize = %d\n", nodeSize);
+  //printf("nodeSize = %d\n", nodeSize);
   //JNodePrint(jtail);
 
   // AddJNode()
-  int strsz = 0; jptr = &jdata[strsz];
+/*  int strsz = 0; jptr = &jdata[strsz];
   strsz += snprintf(jptr, 256, "name") +1;
   //printf("strsz = %d, jptr = %s\n", strsz, jptr);
   jptr = &jdata[strsz];
   strsz += snprintf(jptr, 256-strsz, "Google") +1;
-  if(strsz > 256) ERROR("No space to allocate jdata[]");
+  if(strsz > 256) ERROR("No space to allocate jdata[]");*/
   //printf("strsz = %d, jptr = %s\n", strsz, jptr);
+  int datasz = FormJNodeData(jdata, "name", "Google", JSON_KEYSTR, 256);
+  if(datasz < 0) ERROR("No space to allocate jdata[]");
 
-  nodeSize = AddJNodeData(&jtail, jdata, strsz, listsz);
-  printf("nodeSize = %d\n", nodeSize);
+  nodeSize = AddJNodeData(&jtail, jdata, datasz, listsz);
+  jtail->owner = depth[0];
+  jtail->type = JSON_KEYSTR;
+  //printf("nodeSize = %d\n", nodeSize);
   //JNodePrint(jtail);
 
   depth[1] = jtail;
   JNodePrint(depth[0]);
   JNodePrint(depth[1]);
-  printf("jtail->data = %s\n", jtail->data);
+  printf("key = \"%s\"\n" "value = \"%s\"\n",
+         jtail->data, &jtail->data[strlen(jtail->data)+1]);
 
   return EXIT_SUCCESS;
 }
