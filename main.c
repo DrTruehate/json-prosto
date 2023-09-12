@@ -8,51 +8,15 @@
 #include "jlists.h"
 
 
-size_t KeyStrFill(char *data, const char *key, const char *value, size_t bufsz)
-{
-  size_t datasz = strnlen(key, bufsz) + strnlen(value, bufsz) +2;
-  if(datasz > bufsz) return -1;
-
-  bufsz = sprintf(data, "%s", key) +1;
-  sprintf(&data[bufsz], "%s", value);
-
-  return datasz;
-}
-
-
-size_t KeyNumFill(char *data, const char *key, const char *value, size_t bufsz)
-{
-  size_t datasz = strnlen(key, bufsz) + sizeof(double) +1;
-  if(datasz > bufsz) return -1;
-
-  bufsz = sprintf(data, "%s", key) +1;
-  *(double *)(data+bufsz) = strtod("value", NULL);
-
-  return datasz;
-}
-
-
-size_t JNodeDataFill(char *data, const char *key, const char *value,
-                  const json_type_t type, int bufsz)
-{
-  switch(type) {
-    case JSON_UNDEFINED ... JSON_NULL: break;
-    case JSON_KEYSTR: return KeyStrFill(data, key, value, bufsz);
-    case JSON_KEYNUM: return KeyNumFill;
-    case JSON_KEYTRUE ... JSON_KEYNULL: break;
-  }
-
-  return -1;
-}
-
-
 int main(int argc, char** argv)
 {
   setlocale(LC_ALL, "");
+  setlocale(LC_NUMERIC, "C"); // for correct use strtod()
 
-  char listbuf[BUFSIZ]/*, jdata[256]*/;
-  json_list_t *jlist = (json_list_t *)listbuf;
-  json_list_node_t *depth[10];
+  char lbuf[BUFSIZ], jdata[256];
+  json_list_head_t lhead;
+  void *depth[10];
+//  json_list_t *jlist = (json_list_t *)listbuf;
   //int listsz = BUFSIZ;
 
   // JTreeInit()
@@ -87,7 +51,7 @@ int main(int argc, char** argv)
   JNodePrint(depth[1]);
   printf("key = \"%s\"\n" "value = \"%s\"\n",
          jtail->data, &jtail->data[strlen(jtail->data)+1]);
-*/
+
   JListInit(jlist, BUFSIZ);
   depth[0] = jlist->tail;
   printf("jlist = %p\n"
@@ -96,6 +60,16 @@ int main(int argc, char** argv)
          "jlist->tail = %p\n",
          listbuf, jlist->listsz, jlist->bufsz, jlist->tail);
   JNodePrint(jlist->tail);
+*/
+
+//  JListInit(&lhead, (json_list_node_t *)lbuf, BUFSIZ);
+//  depth[0] = lhead.tail;
+//  JNodePrint(depth[0]);
+  int size = KeyStrFill(jdata, "name", "Google", 256);
+  printf("size = %d, \"%s\": \"%s\"\n", size, jdata, &jdata[5]);
+
+  size = KeyNumFill(jdata, "number", "4.576", 256);
+  printf("size = %d, \"%s\": %.2f\n", size, jdata, *(double *)&jdata[7]);
 
   return EXIT_SUCCESS;
 }

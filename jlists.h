@@ -2,6 +2,9 @@
 */
 #pragma once
 
+#define TEMP_NODE_BUF  256
+
+
 typedef enum {
   JSON_UNDEFINED,
   JSON_OBJECT,  // { member, member, ... }
@@ -11,7 +14,8 @@ typedef enum {
   // "key" :value
   JSON_KEYSTR,  // "key" :"string"
   JSON_KEYNUM,  // "key" :number (type of number similar with double type)
-  JSON_KEYTRUE, JSON_KEYFALSE, JSON_KEYNULL
+  JSON_KEYTRUE, JSON_KEYFALSE, JSON_KEYNULL,
+  JSON_END
 } json_type_t;
 
 
@@ -19,22 +23,23 @@ typedef struct json_list_node_s {
   void
     *owner, // owner of item (object or array)
     *next;  // next node
-  json_type_t type; // type of node
-  int datasz;       // size of data field
-  char data[0];     // beginning of data field
+  json_type_t type;   // type of node
+  int         datasz; // size of data field
+  char        data[0];// beginning of data field
 } json_list_node_t;
 
 
-typedef struct json_list_s {
-  int
-    listsz,
-    bufsz;
-  void *tail;
-  char list[0];
-} json_list_t;
+typedef struct json_list_head_s {
+  int listsz;
+  json_list_node_t
+      *tail;
+} json_list_head_t;
 
 
-int JListInit(json_list_t *const buf, const size_t bufsz);
-int AddJNodeData(json_list_node_t **tail,
-                 const char *data, const int datasz, const size_t bufsz);
+int JListInit(json_list_head_t *const head,
+              json_list_node_t *const buf, const int bufsz);
+int KeyStrFill(char *data, const char *key, const char *value, int bufsz);
+int KeyNumFill(char *data, const char *key, const char *value, int bufsz);
+int AddJNode(json_list_head_t *const head,
+             json_list_node_t *const node, const int bufsz);
 void JNodePrint(json_list_node_t *ptr);
