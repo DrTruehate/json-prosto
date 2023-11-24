@@ -13,9 +13,11 @@ int main(int argc, char** argv)
   setlocale(LC_ALL, "");
   setlocale(LC_NUMERIC, "C"); // for correct use strtod()
 
-  char lbuf[BUFSIZ], jdata[256];
-  json_list_head_t lhead;
-  void *depth[10];
+  char lbuf[BUFSIZ], nbuf[256];
+  json_list_node_t *node = (json_list_node_t *)nbuf;
+
+//  json_list_head_t lhead;
+//  int depth[10];
 //  json_list_t *jlist = (json_list_t *)listbuf;
   //int listsz = BUFSIZ;
 
@@ -65,11 +67,32 @@ int main(int argc, char** argv)
 //  JListInit(&lhead, (json_list_node_t *)lbuf, BUFSIZ);
 //  depth[0] = lhead.tail;
 //  JNodePrint(depth[0]);
-  int size = KeyStrFill(jdata, "name", "Google", 256);
-  printf("size = %d, \"%s\": \"%s\"\n", size, jdata, &jdata[5]);
 
-  size = KeyNumFill(jdata, "number", "4.576", 256);
-  printf("size = %d, \"%s\": %.2f\n", size, jdata, *(double *)&jdata[7]);
+//  int size = KeyStrFill(jdata, "name", "Google", 256);
+//  printf("size = %d, \"%s\": \"%s\"\n", size, jdata, &jdata[5]);
+//
+//  size = KeyNumFill(jdata, "number", "4.576", 256);
+//  printf("size = %d, \"%s\": %.2f\n", size, jdata, *(double *)&jdata[7]);
+
+  int size = 0,
+  newsize = JListInit(lbuf, BUFSIZ);//13
+  JNodePrint(lbuf);
+  printf("newsize = %d\n", newsize);
+  size = newsize;
+
+  node->owner = 0;
+  node->type = JSON_STRING;
+  node->datasz =
+    StrFill(node->data, "TEST MESSAGE", 256) + sizeof(json_list_node_t);
+  newsize = AddJNode(lbuf, node, size, BUFSIZ);
+  JNodePrint(lbuf+size);
+  printf("newsize = %d\n", newsize);
+  size = newsize;
+
+  newsize = JListEnd(lbuf, size, BUFSIZ);//12
+  JNodePrint(lbuf+size);
+  printf("newsize = %d\n", newsize);
+  size = newsize;
 
   return EXIT_SUCCESS;
 }
