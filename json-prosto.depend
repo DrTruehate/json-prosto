@@ -1,0 +1,24 @@
+# depslib dependency file v1.0
+1694607645 source:/home/cometa/Projects/JSON/json-prosto/main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	<locale.h>
+	<regex.h>
+	"misc.h"
+	"jlists.h"
+
+1693982874 /home/cometa/Projects/JSON/json-prosto/misc.h
+
+1693909036 /home/cometa/Projects/JSON/json-prosto/jtrees.h
+
+1694607917 /home/cometa/Projects/JSON/json-prosto/jlists.h
+
+1694604695 source:/home/cometa/Projects/JSON/json-prosto/jlists.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	"jlists.h"
+
