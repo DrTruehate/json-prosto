@@ -9,31 +9,25 @@
  *
  *
  */
-int JListInit(void *const buf, const int bufsz)
+void JListInit(json_list_t *const lst, void *const buf, const size_t bufsz)
 {
+  assert(lst != NULL);
   assert(buf != NULL);
-  int newsize = sizeof(json_list_node_t) +1;
-  assert(newsize <= bufsz);
-  if(newsize > bufsz) return -1;
 
-  json_list_node_t *tail = buf;
-  tail->owner = 0;          // root obj
-  tail->type = JSON_OBJECT; //
-  tail->datasz = 1;         //
-  tail->data[0] = '\0';     //
-
-  return newsize;
+  lst->listsz = 0;
+  lst->maxsz = bufsz;
+  lst->tail = buf;
 }
 
-
+#if 0
 int JListEnd(void *const buf, const int listsz, const int bufsz)
 {
   assert(buf != NULL);
-  int newsize = listsz + sizeof(json_list_node_t);
+  int newsize = listsz + sizeof(json_record_t);
   assert(newsize <= bufsz);
   if(newsize > bufsz) return -1;
 
-  json_list_node_t *tail = buf + listsz;
+  json_record_t *tail = buf + listsz;
   tail->owner = 0;
   tail->type = JSON_END;
   tail->datasz = 0;
@@ -42,11 +36,11 @@ int JListEnd(void *const buf, const int listsz, const int bufsz)
 }
 
 
-int AddJNode(void *const buf, json_list_node_t *const node,
+int AddJNode(void *const buf, json_record_t *const node,
              const int listsz, const int bufsz)
 {
   assert(buf != NULL);
-  int nodesz = sizeof(json_list_node_t) + node->datasz;
+  int nodesz = sizeof(json_record_t) + node->datasz;
   int newsize = listsz + nodesz;
   assert(newsize <= bufsz);
   if(newsize > bufsz) return -1;
@@ -94,11 +88,11 @@ int KeyNumFill(char *data, const char *key, const char *value, int bufsz)
 }
 
 
-int JNodeFill(json_list_node_t *node,
+int JNodeFill(json_record_t *node,
               const char *name, const char *value, int bufsz)
 {
   assert(node != NULL);
-  bufsz -= sizeof(json_list_node_t);
+  bufsz -= sizeof(json_record_t);
   int namesz = strnlen(name, bufsz) +1;
   int valsz = strnlen(value, bufsz) +1;
 
@@ -128,10 +122,10 @@ int JNodeFill(json_list_node_t *node,
  */
 void JNodePrint(void *ptr)
 {
-  json_list_node_t *node = ptr;
+  json_record_t *node = ptr;
   printf("node \"%s\" ptr = %p\n"
          "owner   = %d\n" "type    = %d\n" "datasz  = %d\n",
          node->data, ptr,
          node->owner, node->type, node->datasz);
 }
-
+#endif // 0

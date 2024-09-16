@@ -6,6 +6,7 @@
  */
 #pragma once
 
+#define OBJ_SIZEOF(obj) obj, sizeof(obj)
 #define PTR_SIZEOF(type, obj) (type *)&obj, sizeof(obj)
 #define BZERO(array)          bzero( array, sizeof(array) )
 #define TZERO(obj)            bzero( &obj, sizeof(obj) )

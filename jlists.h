@@ -19,25 +19,25 @@ typedef enum {
 } json_type_t;
 
 
-typedef struct json_list_node_s {
-  int   owner;  // owner of item (shift from the beginning of the list)
+typedef struct {
+  size_t  owner;  // owner of item (shift from the beginning of the list)
   json_type_t
-        type;   // type of node
-  int   datasz; // size of data field
-  char  data[0];// beginning of data field
-} json_list_node_t;
+          type;   // type of record
+  size_t  datasz; // size of data field
+  char    data[0];// beginning of data field
+} json_record_t;
 
 
-typedef struct json_list_head_s {
-  int listsz;
-  json_list_node_t
-      *tail;
-} json_list_head_t;
+typedef struct {
+  size_t  listsz, maxsz;
+  json_record_t
+          *tail;
+} json_list_t;
 
 
-int JListInit(void *const buf, const int bufsz);
+void JListInit(json_list_t *const list, void *const buf, const size_t bufsz);
 int JListEnd(void *const buf, const int listsz, const int bufsz);
-int AddJNode(void *const buf, json_list_node_t *const node,
+int AddJNode(void *const buf, json_record_t *const node,
              const int listsz, const int bufsz);
 
 int StrFill(char *data, const char *str, const int datasz);
